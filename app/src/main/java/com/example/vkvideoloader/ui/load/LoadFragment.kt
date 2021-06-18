@@ -96,7 +96,7 @@ class LoadFragment : Fragment() {
             override fun fail(error: Exception) {
                 Timber.e("Unable to load video")
                 Timber.e(error.toString())
-                throw error
+//                throw error
             }
         })
     }

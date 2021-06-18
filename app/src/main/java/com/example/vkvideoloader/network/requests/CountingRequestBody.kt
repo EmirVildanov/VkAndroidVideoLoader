@@ -3,10 +3,11 @@ package com.example.vkvideoloader.network.requests
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.*
+import timber.log.Timber
 import java.io.IOException
 
 
-class CountingRequestBody1(
+class CountingRequestBody(
     private var delegate: RequestBody,
     private var listener: Listener
 ) : RequestBody() {

@@ -32,6 +32,6 @@ class ProgressFriendlySocketFactory(private val sendBufferSize: Int = DEFAULT_BU
     }
 
     companion object {
-        const val DEFAULT_BUFFER_SIZE = 20480000
+        const val DEFAULT_BUFFER_SIZE = 1000000
     }
 }
