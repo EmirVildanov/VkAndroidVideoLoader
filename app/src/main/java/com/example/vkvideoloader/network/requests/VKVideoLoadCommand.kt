@@ -3,6 +3,7 @@ package com.example.vkvideoloader.network.requests
 import android.content.ContentResolver
 import android.net.Uri
 import com.example.vkvideoloader.network.models.VKServerVideoUploadInfo
+import com.example.vkvideoloader.ui.load.LoadViewModel
 import com.vk.api.sdk.VKApiManager
 import com.vk.api.sdk.VKApiResponseParser
 import com.vk.api.sdk.VKMethodCall
@@ -23,6 +24,7 @@ class VKVideoLoadCommand(
     private val contentResolver: ContentResolver,
     private val videos: List<Uri> = listOf(),
     private val videoName: String,
+    private val viewModel: LoadViewModel
 ) : ApiCommand<Int>() {
     override fun onExecute(manager: VKApiManager): Int {
         if (videos.size == 1) {
@@ -105,7 +107,9 @@ class VKVideoLoadCommand(
                 }
                 Timber.i("Bytes written: $bytesWritten")
                 if (contentLength != -1L) {
-                    Timber.i("${100 * bytesWritten / contentLength}% uploading done\n")
+                    val percentage = 100 * bytesWritten / contentLength
+                    viewModel._videoLoadingPercentage.postValue((percentage.toInt()))
+                    Timber.i("$percentage% uploading done\n")
                 }
             }
         }

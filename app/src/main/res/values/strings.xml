@@ -19,5 +19,6 @@
     <string name="load_new_video">Load new video</string>
     <string name="user_info">"%1$s %2$s"</string>
     <string name="loaded_video_image">Loaded video image</string>
+    <string name="uploadingvideoimage">uploadingVideoImage</string>
 
 </resources>

@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.vkvideoloader.R
 import com.example.vkvideoloader.databinding.FragmentLoadBinding
 import com.example.vkvideoloader.network.requests.VKVideoLoadCommand
+import com.example.vkvideoloader.ui.ProgressBar
 import com.example.vkvideoloader.utils.PathUtils
 import com.example.vkvideoloader.utils.SharedPreferencesWorker
 import com.vk.api.sdk.VK
@@ -27,6 +28,8 @@ import java.io.File
 class LoadFragment : Fragment() {
 
     private lateinit var viewModel: LoadViewModel
+    private lateinit var videoUploadProgress: ProgressBar
+    private var percentage = 0
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -59,6 +62,8 @@ class LoadFragment : Fragment() {
 
         binding.viewModel = viewModel
 
+        videoUploadProgress = binding.videoUploadProgress
+
         binding.loadWhileInBackgroundSwitch.setOnCheckedChangeListener { _ : CompoundButton, isChecked: Boolean ->
             viewModel.changeLoadWhileInBackgroundCheck(isChecked)
             activity?.let { SharedPreferencesWorker.putBooleans(it, mapOf(R.bool.saved_load_while_in_background_key.toString() to isChecked)) }
@@ -69,10 +74,26 @@ class LoadFragment : Fragment() {
             requestVideo()
         }
 
+        viewModel.videoLoadingPercentage.observe(viewLifecycleOwner, { percentage ->
+            setUploadingProgressBar(percentage)
+        })
+
+        binding.increaseButton.setOnClickListener {
+            percentage += 10
+            videoUploadProgress.update(100, percentage)
+            videoUploadProgress.invalidate()
+        }
+
         return binding.root
     }
 
-    fun requestVideo() {
+    private fun setUploadingProgressBar(percentage: Int) {
+//        this.percentage = percentage
+        videoUploadProgress.update(100, percentage)
+        videoUploadProgress.invalidate()
+    }
+
+    private fun requestVideo() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
         resultLauncher.launch(intent)
     }
@@ -82,7 +103,7 @@ class LoadFragment : Fragment() {
         uri?.let {
             videos.add(it)
         }
-        VK.execute(VKVideoLoadCommand(requireActivity().contentResolver, videos, videoName), object :
+        VK.execute(VKVideoLoadCommand(requireActivity().contentResolver, videos, videoName, viewModel), object :
             VKApiCallback<Int> {
             override fun success(result: Int) {
                 if (result == 1) {

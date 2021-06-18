@@ -32,5 +32,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/loadWhileInBackgroundSwitch" />
+
+        <com.example.vkvideoloader.ui.ProgressBar
+            android:id="@+id/videoUploadProgress"
+            android:layout_width="162dp"
+            android:layout_height="19dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loadNewVideoButton" />
+
+        <Button
+            android:id="@+id/increase_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Increase"
+            app:layout_constraintBottom_toTopOf="@+id/videoUploadProgress"
+            app:layout_constraintEnd_toEndOf="@+id/videoUploadProgress"
+            app:layout_constraintStart_toStartOf="@+id/videoUploadProgress"
+            app:layout_constraintTop_toBottomOf="@+id/loadNewVideoButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
