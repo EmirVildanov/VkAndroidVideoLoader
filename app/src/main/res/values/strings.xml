@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">VkVideoLoader</string>
+    <string name="title_home">Home</string>
+    <string name="title_load">Load</string>
+    <integer name="com_vk_sdk_AppId">7878546</integer>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+
+    <bool name="saved_load_while_in_background_key">true</bool>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="login">Login</string>
+    <string name="log_out">Log out</string>
+    <string name="share">Share</string>
+    <string name="share_message">Share message</string>
+    <string name="user_s_profile_image">User\'s profile image</string>
+    <string name="loading_while_closed">Loading while closed</string>
+    <string name="load_new_video">Load new video</string>
+    <string name="user_info">"%1$s %2$s"</string>
+    <string name="loaded_video_image">Loaded video image</string>
+
+</resources>
