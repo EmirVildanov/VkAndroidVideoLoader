@@ -34,7 +34,7 @@ class VKVideoLoadCommand(
             val uploadFlag = 2
             when (uploadFlag) {
                 0 -> easyVideoUpload(uploadUrl, videoUri)
-                2 -> uploadVideoWithByteArray(uploadUrl, videoUri)
+                2 -> uploadVideoWithInputStream(uploadUrl, videoUri)
             }
             return 0
         } else {
@@ -71,7 +71,7 @@ class VKVideoLoadCommand(
     }
 
 
-    private fun uploadVideoWithByteArray(uploadUrl: String, videoUri: Uri) {
+    private fun uploadVideoWithInputStream(uploadUrl: String, videoUri: Uri) {
         val contentType = "video/mp4";
         val videoInputStream = contentResolver.openInputStream(videoUri)!!;
         val videoLength = videoInputStream.available().toLong()
@@ -105,11 +105,12 @@ class VKVideoLoadCommand(
                         Timber.i("Content-length: $contentLength\n")
                     }
                 }
-                Timber.i("Bytes written: $bytesWritten")
                 if (contentLength != -1L) {
                     val percentage = 100 * bytesWritten / contentLength
                     viewModel._videoLoadingPercentage.postValue((percentage.toInt()))
-                    Timber.i("$percentage% uploading done\n")
+
+//                    Timber.i("Bytes written: $bytesWritten")
+//                    Timber.i("$percentage% uploading done\n")
                 }
             }
         }
@@ -124,7 +125,7 @@ class VKVideoLoadCommand(
             .build()
 
         val countingRequestBody =
-            CountingRequestBody(requestBody, countingProgressListener)
+            CountingRequestBody(requestBody, countingProgressListener, viewModel)
 
         val request: Request = Request.Builder()
             .url(uploadUrl)

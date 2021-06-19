@@ -15,7 +15,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.vkvideoloader.R
+import com.example.vkvideoloader.application.VkLoaderApp
 import com.example.vkvideoloader.databinding.FragmentLoadBinding
+import com.example.vkvideoloader.network.models.Video
 import com.example.vkvideoloader.network.requests.VKVideoLoadCommand
 import com.example.vkvideoloader.ui.ProgressBar
 import com.example.vkvideoloader.utils.PathUtils
@@ -29,7 +31,7 @@ class LoadFragment : Fragment() {
 
     private lateinit var viewModel: LoadViewModel
     private lateinit var videoUploadProgress: ProgressBar
-    private var percentage = 0
+    private lateinit var binding: FragmentLoadBinding
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -62,6 +64,8 @@ class LoadFragment : Fragment() {
 
         binding.viewModel = viewModel
 
+        this.binding = binding
+
         videoUploadProgress = binding.videoUploadProgress
 
         binding.loadWhileInBackgroundSwitch.setOnCheckedChangeListener { _ : CompoundButton, isChecked: Boolean ->
@@ -71,24 +75,22 @@ class LoadFragment : Fragment() {
         }
 
         binding.loadNewVideoButton.setOnClickListener {
+            it.isEnabled = false;
             requestVideo()
+        }
+
+        binding.stopButton.setOnClickListener {
+            viewModel.changeUploadingStatus()
         }
 
         viewModel.videoLoadingPercentage.observe(viewLifecycleOwner, { percentage ->
             setUploadingProgressBar(percentage)
         })
 
-        binding.increaseButton.setOnClickListener {
-            percentage += 10
-            videoUploadProgress.update(100, percentage)
-            videoUploadProgress.invalidate()
-        }
-
         return binding.root
     }
 
     private fun setUploadingProgressBar(percentage: Int) {
-//        this.percentage = percentage
         videoUploadProgress.update(100, percentage)
         videoUploadProgress.invalidate()
     }
@@ -111,12 +113,16 @@ class LoadFragment : Fragment() {
                 } else {
                     Toast.makeText(activity, "Video loaded", Toast.LENGTH_SHORT).show()
                     Timber.i("Successfully loaded video $videoName")
+                    val app = requireActivity().applicationContext as VkLoaderApp
+                    app.videos.add(Video(1, videoName))
                 }
+                binding.loadNewVideoButton.isEnabled = true
             }
 
             override fun fail(error: Exception) {
                 Timber.e("Unable to load video")
                 Timber.e(error.toString())
+                binding.loadNewVideoButton.isEnabled = true
 //                throw error
             }
         })

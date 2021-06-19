@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vkvideoloader.R
 import com.example.vkvideoloader.WelcomeActivity
+import com.example.vkvideoloader.application.VkLoaderApp
 import com.example.vkvideoloader.databinding.FragmentHomeBinding
 import com.example.vkvideoloader.network.models.VKUser
 import com.example.vkvideoloader.network.models.Video
@@ -51,8 +52,8 @@ class HomeFragment : Fragment() {
 
         requestUser(binding.nameTV, binding.avatarIV)
 
-        val videos = listOf(Video(1), Video(2, "BABABA"), Video(3, "TESTBABATEST"))
-        showVideos(binding.uploadedVideosRV, videos)
+        val app = requireActivity().applicationContext as VkLoaderApp
+        showVideos(binding.uploadedVideosRV, app.videos)
 
         return binding.root
     }
@@ -123,7 +124,7 @@ class HomeFragment : Fragment() {
         private val nameTV: TextView = itemView.findViewById(R.id.loadedVideoNameTextView)
 
         fun bind(video: Video) {
-            nameTV.text = "TEST_VIDEO_NAME"
+            nameTV.text = video.name
 //            if (!TextUtils.isEmpty(video.photo)) {
 //                Picasso.get().load(video.photo).error(R.drawable.ic_home_black_24dp).into(videoIV)
 //            } else {

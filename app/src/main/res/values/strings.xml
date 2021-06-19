@@ -15,10 +15,16 @@
     <string name="share">Share</string>
     <string name="share_message">Share message</string>
     <string name="user_s_profile_image">User\'s profile image</string>
-    <string name="loading_while_closed">Loading while closed</string>
+    <string name="loading_while_closed">Uploading video when out of application</string>
     <string name="load_new_video">Load new video</string>
     <string name="user_info">"%1$s %2$s"</string>
     <string name="loaded_video_image">Loaded video image</string>
     <string name="uploadingvideoimage">uploadingVideoImage</string>
+    <string name="current_session_already_loaded_videos">Current session already loaded videos:</string>
+    <string name="stop_resume">Stop / Resume</string>
+    <string name="uploading_progress">Uploading progress:</string>
+    <string name="cancel">Cancel</string>
+    <string name="welcome_to_vkvideoloader_app">Welcome to VkVideoLoader App!</string>
+    <string name="you_have_to_login_with_your_vk_account">You have to login with your Vk account</string>
 
 </resources>

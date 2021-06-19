@@ -17,17 +17,17 @@
             android:id="@+id/loadWhileInBackgroundSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:text="@string/loading_while_closed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/loadNewVideoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:text="@string/load_new_video"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,19 +37,39 @@
             android:id="@+id/videoUploadProgress"
             android:layout_width="162dp"
             android:layout_height="19dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/uploadingVideoProgressHeaderTextView" />
+
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/stop_resume"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/videoUploadProgress" />
+
+        <TextView
+            android:id="@+id/uploadingVideoProgressHeaderTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/uploading_progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/loadNewVideoButton" />
 
         <Button
-            android:id="@+id/increase_button"
+            android:id="@+id/cancelLoadButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Increase"
-            app:layout_constraintBottom_toTopOf="@+id/videoUploadProgress"
-            app:layout_constraintEnd_toEndOf="@+id/videoUploadProgress"
-            app:layout_constraintStart_toStartOf="@+id/videoUploadProgress"
-            app:layout_constraintTop_toBottomOf="@+id/loadNewVideoButton" />
+            android:layout_marginTop="32dp"
+            android:text="@string/cancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stop_button" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

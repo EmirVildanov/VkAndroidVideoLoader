@@ -12,7 +12,7 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
 
     var startProgressSide = 0
     var progressBackgroundColor: Int = R.color.colorPrimaryDark
-    var progressFrontColor: Int = R.color.colorPrimary
+    var progressFrontColor: Int = R.color.colorAccent
     var maxProgressPoints: Int? = null
     var currentProgressPoints: Int? = null
 
@@ -21,7 +21,7 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
         try {
             startProgressSide = typedArray.getInt(R.styleable.ProgressBar_startProgressSide, 0)
             progressBackgroundColor = typedArray.getInt(R.styleable.ProgressBar_progressBackgroundColor, R.color.colorPrimaryDark)
-            progressFrontColor = typedArray.getInt(R.styleable.ProgressBar_progressFrontColor, R.color.colorPrimary)
+            progressFrontColor = typedArray.getInt(R.styleable.ProgressBar_progressFrontColor, R.color.colorAccent)
         } finally {
             typedArray.recycle()
         }
@@ -39,7 +39,6 @@ class ProgressBar(context: Context, private val attrs: AttributeSet) : View(cont
         val healthPointPercentage = if (maxProgressPoints == null || currentProgressPoints == null) {
             0f
         } else {
-            println("Result : ${(currentProgressPoints!! / maxProgressPoints!!).toFloat()}")
             (currentProgressPoints!! / maxProgressPoints!!.toFloat())
         }
         val healthWidth = ((width - margin * 2) * healthPointPercentage)

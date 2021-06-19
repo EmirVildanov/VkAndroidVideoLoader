@@ -1,5 +1,6 @@
 package com.example.vkvideoloader.network.requests
 
+import com.example.vkvideoloader.ui.load.LoadViewModel
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.*
@@ -9,7 +10,8 @@ import java.io.IOException
 
 class CountingRequestBody(
     private var delegate: RequestBody,
-    private var listener: Listener
+    private var listener: Listener,
+    private var viewModel: LoadViewModel
 ) : RequestBody() {
 
     private var countingSink: CountingSink? = null
@@ -38,6 +40,10 @@ class CountingRequestBody(
         private var bytesWritten: Long = 0
 
         override fun write(source: Buffer, byteCount: Long) {
+            while (!viewModel._isUploading.value!!) {
+                Timber.i("Not uploading")
+                Thread.sleep(500)
+            }
             super.write(source, byteCount)
             bytesWritten += byteCount
             listener.onRequestProgress(bytesWritten, contentLength())
