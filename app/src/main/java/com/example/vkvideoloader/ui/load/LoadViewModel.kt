@@ -16,6 +16,10 @@ class LoadViewModel : ViewModel() {
     val isUploading: LiveData<Boolean>
         get() = _isUploading
 
+    val _isLoadingCanceled = MutableLiveData(false)
+    val isLoadingCanceled: LiveData<Boolean>
+        get() = _isLoadingCanceled
+
     private val _loadWhileInBackgroundCheck = MutableLiveData<Boolean>()
     val loadWhileInBackgroundCheck: LiveData<Boolean>
         get() = _loadWhileInBackgroundCheck
@@ -27,8 +31,12 @@ class LoadViewModel : ViewModel() {
         _loadWhileInBackgroundCheck.value = !loadWhileInBackgroundCheck.value!!
     }
 
-    fun changeUploadingStatus() {
-        _isUploading.value = !_isUploading.value!!
+    fun changeUploadingStatus(value: Boolean? = null) {
+        if (value != null) {
+            _isUploading.value = value
+        } else {
+            _isUploading.value = !_isUploading.value!!
+        }
         Timber.i("Uploading is ${_isUploading.value}")
     }
 }

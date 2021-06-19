@@ -41,8 +41,8 @@ class CountingRequestBody(
 
         override fun write(source: Buffer, byteCount: Long) {
             while (!viewModel._isUploading.value!!) {
-                Timber.i("Not uploading")
-                Thread.sleep(500)
+                Timber.i("Not uploading video because process is stopped")
+                Thread.sleep(UPLOADING_RESUME_WAIT_TIME_MILLISECONDS)
             }
             super.write(source, byteCount)
             bytesWritten += byteCount
@@ -52,5 +52,9 @@ class CountingRequestBody(
 
     interface Listener {
         fun onRequestProgress(bytesWritten: Long, contentLength: Long)
+    }
+
+    companion object {
+        const val UPLOADING_RESUME_WAIT_TIME_MILLISECONDS = 500L
     }
 }

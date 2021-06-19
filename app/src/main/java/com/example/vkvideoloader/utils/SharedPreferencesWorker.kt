@@ -15,11 +15,11 @@ object SharedPreferencesWorker {
         }
     }
 
-    fun putBooleans(activity: Activity, items: Map<String, Boolean>) {
+    fun putBooleans(activity: Activity, items: Map<Boolean, Boolean>) {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         with(sharedPreferences.edit()) {
             for (item in items) {
-                putBoolean(item.key, item.value)
+                putBoolean(item.key.toString(), item.value)
             }
             apply()
         }
@@ -30,8 +30,8 @@ object SharedPreferencesWorker {
         return sharedPreferences.getString(key, null)
     }
 
-    fun getBoolean(activity: Activity, key: String): Boolean {
+    fun getBoolean(activity: Activity, key: Boolean): Boolean {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-        return sharedPreferences.getBoolean(key, false)
+        return sharedPreferences.getBoolean(key.toString(), false)
     }
 }

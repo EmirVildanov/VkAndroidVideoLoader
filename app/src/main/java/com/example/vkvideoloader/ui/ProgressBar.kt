@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.vkvideoloader.R
+import timber.log.Timber
 
 class ProgressBar(context: Context, private val attrs: AttributeSet) : View(context, attrs) {
 

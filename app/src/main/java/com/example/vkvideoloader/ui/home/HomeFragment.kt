@@ -125,12 +125,11 @@ class HomeFragment : Fragment() {
 
         fun bind(video: Video) {
             nameTV.text = video.name
-//            if (!TextUtils.isEmpty(video.photo)) {
-//                Picasso.get().load(video.photo).error(R.drawable.ic_home_black_24dp).into(videoIV)
-//            } else {
-//                videoIV.setImageResource(R.drawable.ic_home_black_24dp)
-//            }
-            videoIV.setImageResource(R.drawable.ic_home_black_24dp)
+            if (video.image != null) {
+                videoIV.setImageBitmap(video.image)
+            } else {
+                videoIV.setImageResource(R.drawable.ic_video_black_24dp)
+            }
         }
     }
 

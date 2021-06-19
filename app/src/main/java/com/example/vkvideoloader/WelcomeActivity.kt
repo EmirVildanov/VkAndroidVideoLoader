@@ -11,6 +11,7 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthCallback
 import com.vk.api.sdk.auth.VKScope
+import timber.log.Timber
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -28,11 +29,13 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val callback = object: VKAuthCallback {
             override fun onLogin(token: VKAccessToken) {
+                Timber.i("Login succeed. Token: $token")
                 MainActivity.startFrom(this@WelcomeActivity)
                 finish()
             }
 
             override fun onLoginFailed(errorCode: Int) {
+                Timber.i("Login failed. Error code: $errorCode")
             }
         }
         if (!VK.onActivityResult(requestCode, resultCode, data, callback)) {

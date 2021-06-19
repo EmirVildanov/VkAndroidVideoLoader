@@ -11,7 +11,7 @@ class WelcomeViewModel(application: Application) : AndroidViewModel(application)
     fun logIn() {
         val activity = getApplication<VkLoaderApp>().currentActivity
         if (activity != null) {
-            VK.login(activity, arrayListOf(VKScope.WALL, VKScope.PHOTOS, VKScope.VIDEO))
+            VK.login(activity, arrayListOf(VKScope.VIDEO))
         }
         else {
             Timber.i("Current activity is null")

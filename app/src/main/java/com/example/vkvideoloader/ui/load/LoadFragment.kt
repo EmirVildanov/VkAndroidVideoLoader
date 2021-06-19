@@ -1,7 +1,9 @@
 package com.example.vkvideoloader.ui.load
 
 import android.app.Activity
+import android.content.ContentUris
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -25,7 +27,7 @@ import com.example.vkvideoloader.utils.SharedPreferencesWorker
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import timber.log.Timber
-import java.io.File
+
 
 class LoadFragment : Fragment() {
 
@@ -33,20 +35,20 @@ class LoadFragment : Fragment() {
     private lateinit var videoUploadProgress: ProgressBar
     private lateinit var binding: FragmentLoadBinding
 
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            if (data != null && data.data != null) {
-                activity?.let {
-                    val videoName = PathUtils.getName(requireActivity(), data.data!!)
-                    loadVideo(data.data, videoName)
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null && data.data != null) {
+                    activity?.let {
+                        val videoName = PathUtils.getName(requireActivity(), data.data!!)
+                        loadVideo(data.data!!, videoName)
+                    }
+                } else {
+                    Timber.i("No video was chosen")
                 }
-            } else {
-                Timber.i("Sending post without photo")
-                loadVideo()
             }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,24 +68,41 @@ class LoadFragment : Fragment() {
 
         this.binding = binding
 
+        binding.cancelLoadButton.isEnabled = false
+        binding.stopResumeButton.isEnabled = false
+
         videoUploadProgress = binding.videoUploadProgress
 
-        binding.loadWhileInBackgroundSwitch.setOnCheckedChangeListener { _ : CompoundButton, isChecked: Boolean ->
-            viewModel.changeLoadWhileInBackgroundCheck(isChecked)
-            activity?.let { SharedPreferencesWorker.putBooleans(it, mapOf(R.bool.saved_load_while_in_background_key.toString() to isChecked)) }
-            Timber.i("Current <loadWhileInBackgroundCheck> is $isChecked")
+        val changeLoadWhileInBackgroundCheck = SharedPreferencesWorker.getBoolean(
+            requireActivity(),
+            resources.getBoolean(R.bool.saved_load_while_in_background_key)
+        )
+        binding.loadWhileInBackgroundSwitch.isChecked = changeLoadWhileInBackgroundCheck
+
+        binding.loadWhileInBackgroundSwitch.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
+            binding.loadWhileInBackgroundSwitch.isChecked = isChecked
+            activity?.let {
+                SharedPreferencesWorker.putBooleans(
+                    it,
+                    mapOf(resources.getBoolean(R.bool.saved_load_while_in_background_key) to isChecked)
+                )
+            }
         }
 
         binding.loadNewVideoButton.setOnClickListener {
-            it.isEnabled = false;
             requestVideo()
         }
 
-        binding.stopButton.setOnClickListener {
+        binding.stopResumeButton.setOnClickListener {
             viewModel.changeUploadingStatus()
         }
 
-        viewModel.videoLoadingPercentage.observe(viewLifecycleOwner, { percentage ->
+        binding.cancelLoadButton.setOnClickListener {
+            viewModel._isLoadingCanceled.value = true
+        }
+
+        viewModel.videoLoadingPercentage.observe(requireActivity(), { percentage ->
+//            Timber.i("Setting upload percentage: $percentage")
             setUploadingProgressBar(percentage)
         })
 
@@ -100,31 +119,72 @@ class LoadFragment : Fragment() {
         resultLauncher.launch(intent)
     }
 
-    private fun loadVideo(uri: Uri? = null, videoName: String = "EMPTY_NAME") {
-        val videos = ArrayList<Uri>()
-        uri?.let {
-            videos.add(it)
-        }
-        VK.execute(VKVideoLoadCommand(requireActivity().contentResolver, videos, videoName, viewModel), object :
-            VKApiCallback<Int> {
+    private fun loadVideo(uri: Uri, videoName: String = "EMPTY_NAME") {
+        binding.cancelLoadButton.isEnabled = true
+        binding.stopResumeButton.isEnabled = true
+
+        binding.loadNewVideoButton.isEnabled = false;
+
+        val videoLoadCommand = VKVideoLoadCommand(
+            requireActivity().contentResolver,
+            uri,
+            videoName,
+            viewModel
+        )
+        val callback = object : VKApiCallback<Int> {
             override fun success(result: Int) {
                 if (result == 1) {
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Unable to load video. Check your Internet connection", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(activity, "Video loaded", Toast.LENGTH_SHORT).show()
                     Timber.i("Successfully loaded video $videoName")
                     val app = requireActivity().applicationContext as VkLoaderApp
-                    app.videos.add(Video(1, videoName))
+                    app.videos.add(Video(name = videoName, image = getVideoThumbnail(uri)))
                 }
-                binding.loadNewVideoButton.isEnabled = true
+                resetButtons()
             }
 
             override fun fail(error: Exception) {
-                Timber.e("Unable to load video")
+                Timber.e("Unable to load video: ")
                 Timber.e(error.toString())
-                binding.loadNewVideoButton.isEnabled = true
-//                throw error
+                resetButtons()
             }
-        })
+        }
+
+        VK.execute(videoLoadCommand, callback)
+    }
+
+    private fun getVideoThumbnail(videoUri: Uri): Bitmap? {
+        val contentResolver = requireActivity().contentResolver
+
+        return try {
+            val id = ContentUris.parseId(videoUri)
+            MediaStore.Video.Thumbnails.getThumbnail(
+                contentResolver, id,
+                MediaStore.Video.Thumbnails.MINI_KIND, null
+            )
+        } catch (e: NumberFormatException) {
+            null
+        }
+    }
+
+    private fun resetButtons() {
+        binding.loadNewVideoButton.isEnabled = true
+        binding.cancelLoadButton.isEnabled = false
+        binding.stopResumeButton.isEnabled = false
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!binding.loadWhileInBackgroundSwitch.isChecked) {
+            viewModel.changeUploadingStatus(false)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!binding.loadWhileInBackgroundSwitch.isChecked) {
+            viewModel.changeUploadingStatus(true)
+        }
     }
 }
